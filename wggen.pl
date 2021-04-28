@@ -211,11 +211,13 @@ sub generate_server_config($$) {
     foreach my $client (@$clients) {
         my $client_public_key    = $client_state->{$client}->{'publickey'};
         my $client_preshared_key = $client_state->{$client}->{'presharedkey'};
+        my $client_host_part     = $client_state->{$client}->{'host_addr'};
 
         chomp($client_public_key);
         chomp($client_preshared_key);
+        chomp($client_host_part);
 
-        my $CLIENT_SECTION = "\n[Peer] # $client\nPublicKey = $client_public_key\nPresharedKey = $client_preshared_key\nAllowedIPs =\n";
+        my $CLIENT_SECTION = "\n[Peer] # $client\nPublicKey = $client_public_key\nPresharedKey = $client_preshared_key\nAllowedIPs = 192.168.254.$client_host_part/32\n";
         $BASE_SERVER_CONFIG = $BASE_SERVER_CONFIG . $CLIENT_SECTION;
     }
 
