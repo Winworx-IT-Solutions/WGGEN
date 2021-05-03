@@ -2,6 +2,12 @@
 use strict;
 use warnings;
 
+use File::Basename;
+use Cwd;
+use lib File::Basename::dirname(Cwd::abs_path($0));
+
+use WGGEN::Client;
+
 #=======================================================================================================================
 # Global definitions
 #=======================================================================================================================
@@ -22,8 +28,8 @@ sub main() {
     my @opts = @ARGV;
     my %client_state;
     my @actual_clients = ();
-    my $first = shift(@opts);
-    my $second = shift(@opts);
+    my $first = shift(@opts) || "none";
+    my $second = shift(@opts) || "none";
 
     # check if we have an endpoint for the clients to connect to, if no then just die
     if ($first eq "--endpoint") {
@@ -205,7 +211,7 @@ sub generate_server_config($$) {
 
     chomp($server_private_key);
 
-    my $BASE_SERVER_CONFIG = "[Interface] # wireguard server\nAddress =192.168.254.1/24\nListenPort = 51820\nPrivateKey = $server_private_key\nPostUp = iptables -A FORWARD -i wg0 -j ACCEPT; iptables -A FORWARD -o wg0 -j ACCEPT; iptables -t nat -A POSTROUTING -o ens192 -j MASQUERADE\nPostDown = iptables -D FORWARD -i wg0 -j ACCEPT; iptables -D FORWARD -o wg0 -j ACCEPT; iptables -t nat -D POSTROUTING -o ens192 -j MASQUERADE\n";
+    my $BASE_SERVER_CONFIG = "[Interface] # wireguard server\nAddress =192.168.254.1/24\nListenPort = 51820\nPrivateKey = $server_private_key\n";
 
     # append peer sections
     foreach my $client (@$clients) {
