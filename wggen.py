@@ -158,7 +158,7 @@ PresharedKey = {}
 AllowedIPs = {}/32
         """.format(
             str(client.client_name).strip(),
-            str(server_pubkey).strip(),
+            str(client.client_pubkey).strip(),
             str(client.client_psk).strip(),
             str(client.client_vpn_ip).strip()
         )
