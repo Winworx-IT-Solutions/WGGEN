@@ -22,6 +22,8 @@ def main():
     parser = argparse.ArgumentParser(description="Manage Wireguard peer and server configurations")
 
     # add args
+    parser.add_argument('-p', '--list', type=str, nargs='+',
+                        help='List of peer names that will be created', required=False)
     parser.add_argument('-d', '--dns', type=str,
                         help='DNS Server to be used by the clients', required=True)
     parser.add_argument('-c', '--count', type=int,
@@ -65,13 +67,23 @@ def main():
     # get client list from ldap
     server = Server(args.ldap_server, get_info=ALL)
     conn = Connection(server, args.bind_dn, args.bind_pw, auto_bind=True)
-    potential_clients = get_ldap_user_list(conn, args.base_dn, args.filter)
+    ldap_clients = get_ldap_user_list(conn, args.base_dn, args.filter)
 
+    target_clients = []
     clients = []
     actual_clients = []
 
+    if args.list:
+        for c in args.list:
+            if c not in ldap_clients:
+                target_clients.append(c)
+        for c in ldap_clients:
+            target_clients.append(c)
+    else:
+        target_clients = ldap_clients
+
     # create counter for clients
-    for client in potential_clients:
+    for client in target_clients:
         if client == "SERVER":
             Logger.error("Cannot create client {}: Invalid Name".format(client))
         else:
