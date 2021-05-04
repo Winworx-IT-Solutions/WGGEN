@@ -81,6 +81,7 @@ PersistentKeepalive = 20
             Logger.info("config for {} generated".format(self.client_name))
             # end else
 
+        # create QR-Code
         Logger.info("creating QR-Code for {}".format(self.client_name))
         command = "qrencode -t PNG -o {}/wg0-{}.png < {}/wg0-{}.conf".format(self.client_path, self.client_name,
                                                                              self.client_path, self.client_name)

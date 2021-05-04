@@ -8,6 +8,7 @@ import os
 import argparse
 from lib.Utils import Logger as Logger
 from lib.Client import Client as Client
+from ldap3 import Server, Connection, ALL
 
 WG_CLIENT_BASE_PATH = "/etc/wireguard/clients"
 WG_BASE_PATH = "/etc/wireguard"
@@ -21,8 +22,6 @@ def main():
     parser = argparse.ArgumentParser(description="Manage Wireguard peer and server configurations")
 
     # add args
-    parser.add_argument('-p', '--list', type=str, nargs='+',
-                        help='List of peer names that will be created', required=True)
     parser.add_argument('-d', '--dns', type=str,
                         help='DNS Server to be used by the clients', required=True)
     parser.add_argument('-c', '--count', type=int,
@@ -36,6 +35,16 @@ def main():
                         help='Interface, to which the VPN-Traffic gets routed', required=True)
     parser.add_argument('-a', '--access', type=str,
                         help='Subnet/Hosts to which all clients should have access to', required=True)
+    parser.add_argument('-n', '--base-dn', type=str,
+                        help='Base DN for ldap search', required=True)
+    parser.add_argument('-f', '--filter', type=str,
+                        help='Filter for ldap search', required=True)
+    parser.add_argument('-l', '--ldap-server', type=str,
+                        help='Address of ldap server', required=True)
+    parser.add_argument('-b', '--bind-dn', type=str,
+                        help='bind user for ldap server', required=True)
+    parser.add_argument('-w', '--bind-pw', type=str,
+                        help='bind password for ldap server', required=True)
 
     args = parser.parse_args()
 
@@ -53,11 +62,16 @@ def main():
     if not generate_server_keypair():
         Logger.fatal("Failed to generate server keypair")
 
+    # get client list from ldap
+    server = Server(args.ldap_server, get_info=ALL)
+    conn = Connection(server, args.bind_dn, args.bind_pw, auto_bind=True)
+    potential_clients = get_ldap_user_list(conn, args.base_dn, args.filter)
+
     clients = []
     actual_clients = []
 
     # create counter for clients
-    for client in args.list:
+    for client in potential_clients:
         if client == "SERVER":
             Logger.error("Cannot create client {}: Invalid Name".format(client))
         else:
@@ -86,6 +100,15 @@ def main():
 
     # write the server config
     write_server_config(actual_clients, args)
+
+
+def get_ldap_user_list(c, base_dn, ldap_filter):
+    c.search(base_dn, ldap_filter, attributes=['*'])
+    name_list = []
+    for entry in c.entries:
+        name_list.append(entry.uid)
+
+    return name_list
 
 
 def write_server_config(actual_clients, args):
