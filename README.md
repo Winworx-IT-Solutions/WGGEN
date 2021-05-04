@@ -1,4 +1,4 @@
-#Manage Wireguard peer and server configurations
+# Manage Wireguard peer and server configurations
 
 
 usage: `wggen.py [-h] -p LIST [LIST ...] -d DNS -c COUNT -e ENDPOINT -s
