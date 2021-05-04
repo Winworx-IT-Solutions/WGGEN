@@ -20,4 +20,5 @@ usage: `wggen.py [-h] -p LIST [LIST ...] -d DNS -c COUNT -e ENDPOINT -s
 |-l   | --ldap-server|LDAP_SERVER|Address of ldap server                                                                   |
 |-b   | --bind-dn    |BIND_DN    |bind user for ldap server                                                                |
 |-w   | --bind-pw    |BIND_PW    |bind password for ldap server                                                            |
+|-u   | --user-attr  |USER_ATTR  |ldap attribute to use as username                                                           |
 

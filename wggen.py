@@ -47,6 +47,8 @@ def main():
                         help='bind user for ldap server', required=True)
     parser.add_argument('-w', '--bind-pw', type=str,
                         help='bind password for ldap server', required=True)
+    parser.add_argument('-u', '--user-attr', type=str,
+                        help='ldap attribute to use as username', required=True)
 
     args = parser.parse_args()
 
@@ -69,7 +71,7 @@ def main():
     Logger.info("Trying to connect to ldap server {} with {} and password: {}".format(args.ldap_server, args.bind_dn,
                                                                                       args.bind_pw))
     conn = Connection(server, args.bind_dn, args.bind_pw, auto_bind=True)
-    ldap_clients = get_ldap_user_list(conn, args.base_dn, args.filter)
+    ldap_clients = get_ldap_user_list(conn, args.base_dn, args.filter, args.user_attr)
 
     target_clients = []
     clients = []
@@ -117,11 +119,11 @@ def main():
     write_server_config(actual_clients, args)
 
 
-def get_ldap_user_list(c, base_dn, ldap_filter):
+def get_ldap_user_list(c, base_dn, ldap_filter, user_attr):
     c.search(base_dn, ldap_filter, attributes=['*'])
     name_list = []
     for entry in c.entries:
-        name_list.append(entry.uid)
+        name_list.append(entry[user_attr])
 
     Logger.info("Fetched {} clients from ldap".format(len(name_list)))
     return name_list
