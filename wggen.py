@@ -66,6 +66,8 @@ def main():
 
     # get client list from ldap
     server = Server(args.ldap_server, get_info=ALL)
+    Logger.info("Trying to connect to ldap server {} with {} and password: {}".format(args.ldap_server, args.bind_dn,
+                                                                                      args.bind_pw))
     conn = Connection(server, args.bind_dn, args.bind_pw, auto_bind=True)
     ldap_clients = get_ldap_user_list(conn, args.base_dn, args.filter)
 
@@ -107,6 +109,7 @@ def main():
             Logger.warn("Failed to create client: {}".format(client))
 
     # generate clients
+    Logger.info("Will be creating {} peers".format(len(actual_clients)))
     for client in actual_clients:
         client.write_client_config()
 
@@ -120,6 +123,7 @@ def get_ldap_user_list(c, base_dn, ldap_filter):
     for entry in c.entries:
         name_list.append(entry.uid)
 
+    Logger.info("Fetched {} clients from ldap".format(len(name_list)))
     return name_list
 
 
