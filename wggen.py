@@ -9,6 +9,7 @@ import argparse
 from lib.Utils import Logger as Logger
 from lib.Client import Client as Client
 from ldap3 import Server, Connection, ALL
+from random import randrange
 
 WG_CLIENT_BASE_PATH = "/etc/wireguard/clients"
 WG_BASE_PATH = "/etc/wireguard"
@@ -30,9 +31,6 @@ def main():
                         help='Number of peer\'s created for each name', required=True)
     parser.add_argument('-e', '--endpoint', type=str,
                         help='Endpoint for the wireguard peers to connect to', required=True)
-    parser.add_argument('-s', '--vpn_subnet', type=str,
-                        help='Net-Part of a /24 subnet used for vpn connections i.e.: 192.168.254 or 10.11.12',
-                        required=True)
     parser.add_argument('-i', '--interface', type=str,
                         help='Interface, to which the VPN-Traffic gets routed', required=True)
     parser.add_argument('-a', '--access', type=str,
@@ -73,6 +71,17 @@ def main():
     conn = Connection(server, args.bind_dn, args.bind_pw, auto_bind=True)
     ldap_clients = get_ldap_user_list(conn, args.base_dn, args.filter, args.user_attr)
 
+    # choose a subnet and load if it already exists
+    if os.path.isfile("subnet"):
+        Logger.info("subnet file found, reading vpn-subnet information from disk")
+        with open("subnet", 'r') as f:
+            vpn_subnet = f.read()
+    else:
+        vpn_subnet = "10.{}".format(int(randrange(0, 254)))
+        Logger.info("Creating new VPN-Subnet: {}".format(vpn_subnet))
+        with open("subnet", 'w') as f:
+            f.write(vpn_subnet)
+
     target_clients = []
     clients = []
     actual_clients = []
@@ -98,14 +107,27 @@ def main():
     server_pubkey, server_privkey = read_server_keys()
 
     # build clients
-    for i, client in enumerate(clients):
+    base = 0
+    ip = 10
+    for client in clients:
+
+        # determine client path
         client_path = "{}/{}".format(WG_CLIENT_BASE_PATH, client)
         try:
             os.makedirs(client_path)
         except OSError:
             pass
-        generated_client = Client(client_path, client, args.endpoint, args.dns, server_pubkey, args.vpn_subnet,
-                                  args.access, i)
+
+        # determine client vpn ip
+        ip += 1
+        if ip > 254:
+            base += 1
+            ip = 1
+        client_vpn_ip = "{}.{}.{}/16".format(vpn_subnet, base, ip)
+
+        # generate client
+        generated_client = Client(client_path, client, args.endpoint, args.dns, server_pubkey,
+                                  args.access, client_vpn_ip)
         actual_clients.append(generated_client)
         if not generated_client.state:
             Logger.warn("Failed to create client: {}".format(client))
@@ -116,7 +138,7 @@ def main():
         client.write_client_config()
 
     # write the server config
-    write_server_config(actual_clients, args)
+    write_server_config(actual_clients, args, vpn_subnet)
 
 
 def get_ldap_user_list(c, base_dn, ldap_filter, user_attr):
@@ -129,7 +151,7 @@ def get_ldap_user_list(c, base_dn, ldap_filter, user_attr):
     return name_list
 
 
-def write_server_config(actual_clients, args):
+def write_server_config(actual_clients, args, vpn_subnet):
     """
     build and write the server config
     """
@@ -144,7 +166,7 @@ PrivateKey = {}
 PostUp = iptables -A FORWARD -i wg0 -j ACCEPT; iptables -A FORWARD -o wg0 -j ACCEPT; iptables -t nat -A POSTROUTING -o {} -j MASQUERADE
 PostDown = iptables -D FORWARD -i wg0 -j ACCEPT; iptables -D FORWARD -o wg0 -j ACCEPT; iptables -t nat -D POSTROUTING -o {} -j MASQUERADE
     """.format(
-        str(args.vpn_subnet).strip(),
+        str(vpn_subnet).strip(),
         str(server_privkey).strip(),
         str(args.interface).strip(),
         str(args.interface).strip()

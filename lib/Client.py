@@ -3,7 +3,7 @@ from lib.Utils import Logger as Logger
 
 
 class Client:
-    def __init__(self, client_path, client, endpoint, dns, server_pubkey, vpn_subnet, access, client_id):
+    def __init__(self, client_path, client, endpoint, dns, server_pubkey, access, client_vpn_ip):
         self.client_path = client_path
         self.client_name = client
         self.client_pubkey = "none"
@@ -13,12 +13,8 @@ class Client:
         self.client_dns = dns
         self.server_pubkey = server_pubkey
         self.access = access
-        self.client_vpn_ip = "{}.{}".format(vpn_subnet, client_id + 10)
+        self.client_vpn_ip = client_vpn_ip
         self.state = True
-
-        if client_id + 10 > 255:
-            self.state = False
-
         self.generate_keys()
 
     def generate_keys(self):
@@ -56,7 +52,7 @@ class Client:
             Logger.info("generating config for client: {}".format(self.client_name))
             base_client_config = """[Interface]
 PrivateKey = {}
-Address = {}/24
+Address = {}
 DNS = {}
     
 [Peer] # wireguard server
