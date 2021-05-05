@@ -160,7 +160,7 @@ def write_server_config(actual_clients, args, vpn_subnet):
     server_pubkey, server_privkey = read_server_keys()
 
     base_server_config = """[Interface] # wireguard-server
-Address = {}.1/24
+Address = {}.0.1/24
 ListenPort = 51820
 PrivateKey = {}
 PostUp = iptables -A FORWARD -i wg0 -j ACCEPT; iptables -A FORWARD -o wg0 -j ACCEPT; iptables -t nat -A POSTROUTING -o {} -j MASQUERADE
