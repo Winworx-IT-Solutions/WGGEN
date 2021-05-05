@@ -52,7 +52,7 @@ class Client:
             Logger.info("generating config for client: {}".format(self.client_name))
             base_client_config = """[Interface]
 PrivateKey = {}
-Address = {}
+Address = {}/16
 DNS = {}
     
 [Peer] # wireguard server

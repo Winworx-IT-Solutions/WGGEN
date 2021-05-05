@@ -123,7 +123,7 @@ def main():
         if ip > 254:
             base += 1
             ip = 1
-        client_vpn_ip = "{}.{}.{}/16".format(vpn_subnet, base, ip)
+        client_vpn_ip = "{}.{}.{}".format(vpn_subnet, base, ip)
 
         # generate client
         generated_client = Client(client_path, client, args.endpoint, args.dns, server_pubkey,
