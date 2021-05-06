@@ -6,6 +6,7 @@ PATH = "/etc/wireguard"
 
 def main():
     ips = []
+    dips = []
     files_to_check = []
 
     client_path = PATH + '/clients'
@@ -21,10 +22,15 @@ def main():
         ip = {'addr': config['Interface']['Address'], 'file': f}
         for oip in ips:
             if oip['addr'] == ip['addr']:
+                dips.append([oip, ip])
                 print("Found duplicated IP ({}) in two conflicting files: {} and {}".format(ip['addr'],
                                                                                             ip['file'], oip['file']))
         else:
             ips.append(ip)
+    if dips:
+        for dip in dips:
+            print(dip)
+        print(f"found a total of {len(dips)} duplicated IP's")
 
 
 if __name__ == "__main__":

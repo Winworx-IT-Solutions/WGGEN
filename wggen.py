@@ -60,12 +60,11 @@ def main():
         if not generated_client.state:
             Logger.warn("Failed to create client: {}".format(client))
 
-        # save last ip on last client
-        if i == n_clients:
-            with open(lastip_file, 'w') as f:
-                f.write("{}.{}".format(base, ip))
-
         print("Creating clients: {}%".format(int((i/(n_clients-1))*100)), end="\r")
+
+    # save last ip on last client
+    with open(lastip_file, 'w') as f:
+        f.write("{}.{}".format(base, ip))
     print("\nCreated {} clients".format(n_clients))
 
     # write client config files and server config file
