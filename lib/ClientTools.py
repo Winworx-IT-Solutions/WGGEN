@@ -8,19 +8,24 @@ class ClientTools:
 
         target_clients = []
         clients = []
+        ldap_clients = []
 
         # get ldap clients
-        ldap = LDAPTools(args)
-        ldap_clients = ldap.get_ldap_clients()
+        if args.enable_ldap:
+            ldap = LDAPTools(args)
+            ldap_clients = ldap.get_ldap_clients()
+
+        if not args.list and not ldap_clients:
+            Logger.fatal("Nothing to do, ldap disabled and no clients passed with -p")
 
         if args.list:
             for c in args.list:
                 if c not in ldap_clients:
                     target_clients.append(c)
+
+        if ldap_clients:
             for c in ldap_clients:
                 target_clients.append(c)
-        else:
-            target_clients = ldap_clients
 
         # create counter for clients
         for client in target_clients:

@@ -39,20 +39,22 @@ class Tools:
                             help='Interface, to which the VPN-Traffic gets routed', required=True)
         parser.add_argument('-a', '--access', type=str,
                             help='Subnet/Hosts to which all clients should have access to', required=True)
-        parser.add_argument('-n', '--base-dn', type=str,
-                            help='Base DN for ldap search', required=True)
-        parser.add_argument('-f', '--filter', type=str,
-                            help='Filter for ldap search', required=True)
-        parser.add_argument('-l', '--ldap-server', type=str,
-                            help='Address of ldap server', required=True)
-        parser.add_argument('-b', '--bind-dn', type=str,
-                            help='bind user for ldap server', required=True)
-        parser.add_argument('-w', '--bind-pw', type=str,
-                            help='bind password for ldap server', required=True)
-        parser.add_argument('-u', '--user-attr', type=str,
-                            help='ldap attribute to use as username', required=True)
 
-        return parser.parse_args()
+        # ldap specific options
+        parser.add_argument('-L', '--enable-ldap', action='store_true', help="Enable LDAP import of users")
+        parser.add_argument('-n', '--base-dn', type=str, help='Base DN for ldap search')
+        parser.add_argument('-f', '--filter', type=str, help='Filter for ldap search')
+        parser.add_argument('-l', '--ldap-server', type=str, help='Address of ldap server')
+        parser.add_argument('-b', '--bind-dn', type=str, help='bind user for ldap server')
+        parser.add_argument('-w', '--bind-pw', type=str, help='bind password for ldap server')
+        parser.add_argument('-u', '--user-attr', type=str, help='ldap attribute to use as username')
+
+        args = parser.parse_args()
+
+        if args.enable_ldap and (args.base_dn is None or args.filter is None or args.ldap_server is None or args.bind_dn is None or args.bind_pw is None or args.user_attr is None):
+            parser.error("-L requires -n, -f, -l, -b, -w and -u")
+
+        return args
 
     @staticmethod
     def get_base_ip(lastip_path):

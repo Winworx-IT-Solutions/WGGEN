@@ -26,6 +26,7 @@ class ServerTools:
         :return: True or False depending on if the generation of the server keypair was successful
         """
         if os.path.isfile('{}/privatekey'.format(wg_base_path)) and os.path.isfile('{}/publickey'.format(wg_base_path)):
+            Logger.info("Server keypair already exists. Skipping generation")
             return True
 
         Logger.info("Creating Server keypair")
@@ -34,7 +35,6 @@ class ServerTools:
         os.system(command)
 
         if os.path.isfile('{}/privatekey'.format(wg_base_path)) and os.path.isfile('{}/publickey'.format(wg_base_path)):
-            Logger.info("Server keypair already exists. Skipping generation")
             return True
 
         return False

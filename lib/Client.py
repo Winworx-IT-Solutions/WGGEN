@@ -73,6 +73,6 @@ PersistentKeepalive = 20
             # end else
 
         # create QR-Code
-        command = "qrencode -t PNG -o {}/wg0-{}.png < {}/wg0-{}.conf".format(self.client_path, self.client_name,
-                                                                             self.client_path, self.client_name)
+        command = f"qrencode -t PNG -o {self.client_path}/wg0-{self.client_name}.png <" + \
+                  f" {self.client_path}/wg0-{self.client_name}.conf "
         os.system(command)
