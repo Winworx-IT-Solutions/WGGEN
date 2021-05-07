@@ -63,10 +63,10 @@ PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -D FORWARD -o %i -j ACC
 
         for client in actual_clients:
             client_base_config = """
-    [Peer] # {}
-    PublicKey = {}
-    PresharedKey = {}
-    AllowedIPs = {}/32
+[Peer] # {}
+PublicKey = {}
+PresharedKey = {}
+AllowedIPs = {}/32
             """.format(
                 str(client.client_name).strip(),
                 str(client.client_pubkey).strip(),
