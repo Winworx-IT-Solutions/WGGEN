@@ -1,4 +1,5 @@
 import os
+import configparser
 from lib.Utils import Logger as Logger
 
 
@@ -70,7 +71,12 @@ PersistentKeepalive = 20
 
             with open(path, 'w') as f:
                 f.write(base_client_config + "\n")
-            # end else
+        # client config already exists, read the value of its IP-Address
+        else:
+            config = configparser.ConfigParser()
+            config.read(f"{self.client_path}/wg0-{self.client_name}.conf")
+            self.client_vpn_ip = config['Interface']['Address']
+            self.client_vpn_ip = self.client_vpn_ip.split('/')[0]
 
         # create QR-Code
         command = f"qrencode -t PNG -o {self.client_path}/wg0-{self.client_name}.png <" + \
