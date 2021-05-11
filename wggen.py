@@ -37,6 +37,10 @@ def main():
 
     # build clients
     n_clients = len(clients)
+    if n_clients > 65532:  # hard limit on a full /16 VPN-Subnet, Broadcast and Net-Address subtracted
+        Logger.fatal("You are trying to create more than 65532 peers. This exceeds the /16 VPN-Subnet and is "
+                     "not supported by WGGEN. On a serious note: Have you lost your mind?")
+    Logger.info(f"Will be creating {n_clients} peers")
     actual_clients = []
     for i, client in enumerate(clients):
         # determine client path
@@ -50,22 +54,24 @@ def main():
         ip += 1
         if ip > 254:
             base += 1
+            if base > 255:
+                Logger.fatal(f"Ran out of VPN-Subnet Addresses at client {i} of {n_clients}")
             ip = 1
-        client_vpn_ip = "{}.{}.{}".format(vpn_subnet, base, ip)
+        client_vpn_ip = f"{vpn_subnet}.{base}.{ip}"
 
         # generate client
         generated_client = Client(client_path, client, args.endpoint, args.dns, server_pubkey,
                                   args.access, client_vpn_ip)
         actual_clients.append(generated_client)
         if not generated_client.state:
-            Logger.warn("Failed to create client: {}".format(client))
+            Logger.warn(f"Failed to create client: {client}")
 
-        print("Creating clients: {}%".format(int((i/(n_clients-1))*100)), end="\r")
+        print(f"Creating clients: {int((i/(n_clients-1))*100)}%", end="\r")
 
     # save last ip on last client
     with open(lastip_file, 'w') as f:
-        f.write("{}.{}".format(base, ip))
-    print("\nCreated {} clients".format(n_clients))
+        f.write(f"{base}.{ip}")
+    print(f"\nCreated {n_clients} clients")
 
     # write client config files and server config file
     ClientTools.write_config_files(actual_clients)

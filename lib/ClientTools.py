@@ -30,10 +30,10 @@ class ClientTools:
         # create counter for clients
         for client in target_clients:
             if client == "SERVER":
-                Logger.error("Cannot create client {}: Invalid Name".format(client))
+                Logger.error(f"Cannot create client {client}: Invalid Name")
             else:
                 for i in range(0, args.count):
-                    clients.append("{}-{}".format(client, i))
+                    clients.append(f"{client}-{i}")
 
         return clients
 
@@ -41,6 +41,6 @@ class ClientTools:
     def write_config_files(actual_clients):
         n_actual_clients = len(actual_clients)
         for i, client in enumerate(actual_clients):
-            print("Writing config files: {}%".format(int((i / (n_actual_clients - 1)) * 100)), end="\r")
+            print(f"Writing config files: {int((i / (n_actual_clients - 1)) * 100)}%", end="\r")
             client.write_client_config()
-        print("\nWritten {} config files".format(n_actual_clients))
+        print(f"\nWritten {n_actual_clients} config files")

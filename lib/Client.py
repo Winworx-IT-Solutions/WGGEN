@@ -20,54 +20,44 @@ class Client:
 
     def generate_keys(self):
         if os.path.isdir(self.client_path):
-            if not (os.path.isfile("{}/privatekey".format(self.client_path)) and
-                    os.path.isfile("{}/publickey".format(self.client_path)) and
-                    os.path.isfile("{}/presharedkey".format(self.client_path))):
+            if not (os.path.isfile(f"{self.client_path}/privatekey") and
+                    os.path.isfile(f"{self.client_path}/publickey") and
+                    os.path.isfile(f"{self.client_path}/presharedkey")):
 
                 # public/privatekey
-                command = "umask 077; wg genkey | tee {}/privatekey | wg pubkey > {}/publickey".format(self.client_path,
-                                                                                                       self.client_path)
+                command = f"umask 077; wg genkey | tee {self.client_path}/privatekey | wg pubkey > {self.client_path}/publickey"
                 os.system(command)
 
                 # presharedkey
-                command = "umask 077; wg genpsk > {}/presharedkey".format(self.client_path)
+                command = f"umask 077; wg genpsk > {self.client_path}/presharedkey"
                 os.system(command)
 
             # read keys in any case
-            with open("{}/privatekey".format(self.client_path), 'r') as f:
+            with open(f"{self.client_path}/privatekey", 'r') as f:
                 self.client_privkey = f.read()
-            with open("{}/publickey".format(self.client_path), 'r') as f:
+            with open(f"{self.client_path}/publickey", 'r') as f:
                 self.client_pubkey = f.read()
-            with open("{}/presharedkey".format(self.client_path), 'r') as f:
+            with open(f"{self.client_path}/presharedkey", 'r') as f:
                 self.client_psk = f.read()
         else:
             # something went horribly wrong when the clients got built. Or someone is messing with the client dir
             Logger.fatal("Client directory has not been created or was deleted intermittently")
 
     def write_client_config(self):
-        path = "{}/wg0-{}.conf".format(self.client_path, self.client_name)
+        path = f"{self.client_path}/wg0-{self.client_name}.conf"
 
         if not os.path.isfile(path):
-            base_client_config = """[Interface]
-PrivateKey = {}
-Address = {}/16
-DNS = {}
+            base_client_config = f"""[Interface]
+PrivateKey = {str(self.client_privkey).strip()}
+Address = {str(self.client_vpn_ip).strip()}/16
+DNS = {str(self.client_dns).strip()}
     
 [Peer] # wireguard server
-PublicKey = {}
-PresharedKey = {}
-AllowedIPs = {}
-Endpoint = {}
-PersistentKeepalive = 20
-                """.format(
-                str(self.client_privkey).strip(),
-                str(self.client_vpn_ip).strip(),
-                str(self.client_dns).strip(),
-                str(self.server_pubkey).strip(),
-                str(self.client_psk).strip(),
-                str(self.access).strip(),
-                str(self.endpoint).strip()
-            )
+PublicKey = {str(self.server_pubkey).strip()}
+PresharedKey = {str(self.client_psk).strip()}
+AllowedIPs = {str(self.access).strip()}
+Endpoint = {str(self.endpoint).strip()}
+PersistentKeepalive = 20"""
 
             with open(path, 'w') as f:
                 f.write(base_client_config + "\n")

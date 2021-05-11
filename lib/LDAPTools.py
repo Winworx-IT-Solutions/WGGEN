@@ -10,8 +10,7 @@ class LDAPTools:
         self.base_dn = args.base_dn
         self.user_attr = args.user_attr
 
-        Logger.info("Trying to connect to ldap server {} with {} and password: {}".format(args.ldap_server,
-                                                                                          args.bind_dn, args.bind_pw))
+        Logger.info(f"Trying to connect to ldap server {args.ldap_server} with {args.bind_dn} and password: {args.bind_pw}")
 
     def get_ldap_clients(self):
         self.conn.search(self.base_dn, self.ldap_filter, attributes=['*'])
@@ -19,6 +18,6 @@ class LDAPTools:
         for entry in self.conn.entries:
             name_list.append(entry[self.user_attr])
 
-        Logger.info("Fetched {} clients from ldap".format(len(name_list)))
+        Logger.info(f"Fetched {len(name_list)} clients from ldap")
         return name_list
 

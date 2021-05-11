@@ -7,20 +7,20 @@ from random import randrange
 class Logger:
     @staticmethod
     def fatal(error):
-        print("FATAL: {}".format(error))
+        print(f"FATAL: {error}")
         sys.exit()
 
     @staticmethod
     def error(error):
-        print("ERROR: {}".format(error))
+        print(f"ERROR: {error}")
 
     @staticmethod
     def warn(error):
-        print("WARN: {}".format(error))
+        print(f"WARN: {error}")
 
     @staticmethod
     def info(error):
-        print("INFO: {}".format(error))
+        print(f"INFO: {error}")
 
 
 class Tools:
@@ -76,7 +76,7 @@ class Tools:
                 vpn_subnet = f.read()
         else:
             vpn_subnet = "10.{}".format(int(randrange(0, 254)))
-            Logger.info("Creating new VPN-Subnet: {}".format(vpn_subnet))
+            Logger.info(f"Creating new VPN-Subnet: {vpn_subnet}")
             with open(subnet_file, 'w') as f:
                 f.write(vpn_subnet)
 
