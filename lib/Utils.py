@@ -66,6 +66,9 @@ class Tools:
                 content = f.read()
             base, ip = content.split(".")
 
+        # if the base is 0 than we need to reserve the first IP in the subnet for the server
+        if base == 0:
+            ip = 1
         return int(base), int(ip)
 
     @staticmethod
