@@ -37,14 +37,14 @@ def main():
 
     # build clients
     n_clients = len(clients)
-    if n_clients > 65532:  # hard limit on a full /16 VPN-Subnet, Broadcast and Net-Address subtracted
-        Logger.fatal("You are trying to create more than 65532 peers. This exceeds the /16 VPN-Subnet and is "
-                     "not supported by WGGEN. On a serious note: Have you lost your mind?")
+    if n_clients > 65531:  # we cannot manage more than this amount of clients, don't even try
+        Logger.fatal("You are trying to create more than 65531 peers. This exceeds the /16 VPN-Subnet and is "
+                     "not supported by WGGEN.")
     Logger.info(f"Will be creating {n_clients} peers")
     actual_clients = []
     for i, client in enumerate(clients):
         # determine client path
-        client_path = "{}/{}".format(WG_CLIENT_BASE_PATH, client)
+        client_path = f"{WG_CLIENT_BASE_PATH}/{client}"
         try:
             os.makedirs(client_path)
         except OSError:
