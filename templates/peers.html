@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+{% if peers %}
+<h1>All Peers currently configured</h1>
+<table class="list_table">
+    <tr class="list_table_form">
+        <td><form action="" method="post">  
+            <input type="text" placeholder="Peer Name" name="name" required>
+		    <button type="submit">Create New Peer</button>
+        </form></td>
+        <td><form action="/create_peers_from_ldap" method="get">  
+		    <button type="submit">Ldap Import</button>
+        </form></td>
+    </tr>
+    <tr class="list_table_header">
+        <th>Name</th>
+        <th>Publickey</th>
+        <th>VPN Subnet IP</th>
+        <th>Allowed IP's</th>
+    </tr>
+{% for peer in peers %}
+    <tr class="list_table_content">
+        <td><a href="/wg_peers?detail={{ peer[0] }}">{{ peer[1] }}</a></td>
+        <td>{{ peer[3] }}</td>
+        <td>{{ peer[5] }}</td> 
+        <td>{{ peer[6] }}</td>
+    </tr>
+{% endfor %}    
+</table>
+{% else %}
+<h1>You havent yet added any peers</h1>
+{% endif %}
+{% endblock %}

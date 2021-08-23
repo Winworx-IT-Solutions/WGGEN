@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="/static/css/style.css">
+        <title>{{ page_title }}</title>
+    </head>
+    <body>
+        <div class="navbar">
+            <ul>
+                <li><a href="/vpn_subnets">VPN Subnets</a></li>
+                <li><a href="/wg_interfaces">Interfaces</a></li>
+                <li><a href="/wg_peers">Peers</a></li>
+                <li><a href="/ip_rules">Firewall Rules</a></li>
+                <li><a href="/ip_services">Services</a></li>
+                <li><a href="/ldap_sources">LDAP/AD Integration</a></li>
+                <li></li>
+                <li><a href="/logout">Logout: "{{ logged_in_user }}"</a></li>
+            </ul>
+        </div>
+        <hr>
+        {% if status %}
+        <p>{{ status }}</p>
+        {% endif %}
+        <div class="container">
+            {% block content %} {% endblock %}
+        </div>
+    </body>    
+</html>

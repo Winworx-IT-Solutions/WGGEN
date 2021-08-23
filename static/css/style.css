@@ -1,0 +1,78 @@
+/* general styling */
+a:visited {
+    color: black;
+}
+
+/* Login Page styling */
+.login_container {
+	text-align: center;
+	background-color: white;
+	border: 1px solid black;
+	width: 300px;
+	margin: 0 auto;
+	padding: 10px;
+}
+.login_container h1 {
+}
+
+
+/* navbar styling */
+.navbar {
+	border: 1px solid black;
+}
+
+.navbar ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.navbar li {
+  float: left;
+}
+
+.navbar li a {
+  display: block;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  color: black;
+}
+
+.navbar li a:hover {
+  background-color: #f0ffff;
+}
+
+/* General Container Styling */
+.container {
+	text-align: center;
+	background-color: white;
+	border: 1px solid black;
+	width: auto;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 14px 16px;
+}
+.container h1 {
+}
+
+/* table styling */
+.list_table {
+    margin-left: auto;
+    margin-right: auto;
+}
+.list_table th, td {
+  padding: 5px;
+}
+.list_table tr:hover {
+    background-color: #f0ffff;
+}
+.list_table_content th, td {
+
+}
+.list_table_header th {
+    background-color: lightblue;
+}
+.list_table_form form {
+}

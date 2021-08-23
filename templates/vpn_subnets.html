@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>All VPN Subnets currently configured</h1>
+<table class="list_table">
+    <tr class="list_table_form">
+        <form action="/vpn_subnets" method="post">  
+            <td><input type="text" name="desc" placeholder="Short Description" required></td>
+	        <td><button type="submit">Add VPN Subnet</button></td>
+        </form>   
+    </tr>
+    <tr class="list_table_header">
+        <th>ID</th>
+        <th>IP Range</th>
+        <th>Description</th>
+    </tr>
+{% for subnet in subnets %}
+    <tr class="list_table_content">
+        <td><a href="/vpn_subnet_detail?id={{ subnet.subnet_id }}">{{ subnet.subnet_id }}</a></td>
+        <td>{{ subnet.base_ip }}.0.0/{{ subnet.netmask }}</td>
+        <td>{{ subnet.desc }}</td>
+    </tr>
+{% endfor %}    
+</table>
+{% endblock %}

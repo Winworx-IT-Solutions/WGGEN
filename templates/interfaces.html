@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block content %}
+{% if interfaces %}
+<h1>All Interfaces currently configured</h1>
+<table class="list_table">
+    <tr class="list_table_form">
+        <form action="" method="post">  
+            <td><input type="text" placeholder="Interface Name" name="name" required></td>
+		    <td><button type="submit">Create New Interface</button></td>
+        </form>   
+    </tr>
+    <tr class="list_table_header">
+        <th>Name</th>
+        <th>Publickey</th>
+        <th>VPN Subnet IP</th>
+    </tr>
+{% for interface in interfaces %}
+    <tr class="list_table_content">
+        <td><a href="/wg_interface_detail?id={{ interface.name }}">{{ interface.name }}</a></td>
+        <td>{{ interface.publickey }}</td>
+        <td>{{ interface.vpn_ip }}</td> 
+    </tr>
+{% endfor %}    
+</table>
+{% else %}
+<h1>You havent yet added an interface</h1>
+<div class="container">
+    <form action="" method="post">  
+        <div>   
+            <input type="text" placeholder="Interface Name" name="name" required>   
+			<button type="submit">Create New Interface</button>   
+        </div>   
+    </form>   
+</div>
+{% endif %}
+{% endblock %}
