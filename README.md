@@ -1,3 +1,5 @@
+Archived by DMBGIT 14042025
+
 # Manage Wireguard peer and server configurations
 
 
